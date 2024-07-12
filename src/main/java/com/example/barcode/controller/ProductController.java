@@ -23,4 +23,9 @@ public class ProductController {
     public Product createProduct(@RequestBody CreateProductDTO dto) throws Exception {
         return productService.createProduct(dto.name());
     }
+
+    @GetMapping("/{id}")
+    public Product getOneProduct(@PathVariable Long id){
+        return productService.getOneProduct(id);
+    }
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -39,5 +40,10 @@ public class ProductService {
 
     public List<Product> getProducts(){
         return productRepository.findAll();
+    }
+
+    public Product getOneProduct(Long id) {
+        Optional<Product> productOptional = productRepository.findById(id);
+        return productOptional.orElse(null);
     }
 }
