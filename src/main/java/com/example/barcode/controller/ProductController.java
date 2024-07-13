@@ -1,9 +1,11 @@
 package com.example.barcode.controller;
 
 import com.example.barcode.dtos.CreateProductDTO;
+import com.example.barcode.dtos.ProductResponse;
 import com.example.barcode.model.Product;
 import com.example.barcode.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,17 +17,17 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping
-    public List<Product> getProducts(){
+    public ResponseEntity  getProducts(){
         return productService.getProducts();
     }
 
     @PostMapping
-    public Product createProduct(@RequestBody CreateProductDTO dto) throws Exception {
+    public ResponseEntity createProduct(@RequestBody CreateProductDTO dto) throws Exception {
         return productService.createProduct(dto.name());
     }
 
     @GetMapping("/{id}")
-    public Product getOneProduct(@PathVariable Long id){
+    public ResponseEntity getOneProduct(@PathVariable Long id){
         return productService.getOneProduct(id);
     }
 }

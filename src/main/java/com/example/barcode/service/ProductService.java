@@ -1,16 +1,20 @@
 package com.example.barcode.service;
 
+import com.example.barcode.dtos.ProductResponse;
 import com.example.barcode.model.BarcodeCounter;
 import com.example.barcode.model.Product;
 import com.example.barcode.repository.BarcodeCounterRepository;
 import com.example.barcode.repository.ProductRepository;
 import com.google.zxing.WriterException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -32,7 +36,7 @@ public class ProductService {
         return String.format("%05d", nextBarcode);
     }
 
-    public Product createProduct(String name) throws IOException, WriterException {
+    public ResponseEntity createProduct(String name) throws IOException, WriterException {
         String barcode = getNextBarcode();
         byte[] barcodeImage = barcodeService.generateBarcodeImage(barcode);
 
@@ -41,15 +45,36 @@ public class ProductService {
         product.setBarcode(barcode);
         product.setBarcodeImage(barcodeImage);
         productRepository.save(product);
-        return product;
+
+        var response = new ProductResponse(product.getName(), product.getBarcode(), product.getBarcodeImage());
+
+        return ResponseEntity.ok().body(response);
     }
 
-    public List<Product> getProducts(){
-        return productRepository.findAll();
+    public ResponseEntity getProducts(){
+        List<Product> products = productRepository.findAll();
+        List<ProductResponse> response = products.stream()
+                .map(product -> new ProductResponse(
+                        product.getName(),
+                        product.getBarcode(),
+                        product.getBarcodeImage()
+                ))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok().body(response);
     }
 
-    public Product getOneProduct(Long id) {
+    public ResponseEntity getOneProduct(Long id) {
         Optional<Product> productOptional = productRepository.findById(id);
-        return productOptional.orElse(null);
+        if(productOptional.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("product not found");
+        }
+        var product = productOptional.get();
+        var reponse = new ProductResponse(
+                product.getName(),
+                product.getBarcode(),
+                product.getBarcodeImage()
+                );
+
+        return ResponseEntity.ok().body(reponse);
     }
 }
