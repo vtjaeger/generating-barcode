@@ -21,6 +21,7 @@ public class BarcodeController {
     @Autowired
     private BarcodeService barcodeService;
 
+    @Deprecated
     @GetMapping("/{id}")
     public void getBarcodeImage(@PathVariable Long id, HttpServletResponse response) throws Exception {
         Optional<Product> productOptional = productRepository.findById(id);
@@ -41,8 +42,8 @@ public class BarcodeController {
         }
     }
 
-    @GetMapping("/search")
-    public Product getByBarcode(@RequestParam String barcode){
+    @GetMapping("/code/{barcode}")
+    public Product getByBarcode(@PathVariable String barcode){
         return barcodeService.getByBarcode(barcode);
     }
 }
